@@ -155,6 +155,19 @@ def sign(
     show_default=True,
     help="Output format",
 )
+@click.option(
+    "--private-key-format",
+    type=click.Choice(["binary", "pem"], case_sensitive=False),
+    default="pem",
+    show_default=True,
+    help="Private key output format (applies to single/multiple).",
+)
+@click.option(
+    "--emit-macros-header",
+    type=str,
+    required=False,
+    help='Emit a minimal macros header (path or "-" for stdout).',
+)
 @click.pass_context
 def keygen(
     ctx: click.Context,
@@ -162,6 +175,8 @@ def keygen(
     output_path: Optional[Path],
     generations: int,
     key_format: str,
+    private_key_format: str,
+    emit_macros_header: Optional[str],
 ) -> None:
     """Generate cryptographic keypair(s)."""
     from .keygen import generate_keypair, save_key
@@ -174,17 +189,18 @@ def keygen(
             click.echo(f"Generations: {generations}")
             click.echo(f"Format: {key_format}")
 
-        if generations == 1:
-            # Single keypair
+        if generations == 1 and key_format != "c-array":
+            # Single keypair (non c-array legacy path)
             private_key, public_key = generate_keypair(algorithm)
 
             if output_path:
-                # Save to files
-                private_path = output_path.with_suffix(".key")
+                # Save to files (respect chosen formats)
+                private_ext = ".pem" if private_key_format.lower() == "pem" else ".key"
+                private_path = output_path.with_suffix(private_ext)
                 public_path = output_path.with_suffix(".pub")
 
                 with open(private_path, "wb") as f:
-                    save_key(private_key, f, key_format)
+                    save_key(private_key, f, private_key_format)
                 with open(public_path, "wb") as f:
                     save_key(public_key, f, key_format)
 
@@ -199,7 +215,7 @@ def keygen(
                 click.echo(f"  Public:  {public_path}")
             else:
                 # Output to stdout (binary only)
-                if key_format != "binary":
+                if key_format != "binary" or private_key_format != "binary":
                     click.secho(
                         "Warning: stdout output only supports binary format", fg="yellow"
                     )
@@ -209,14 +225,23 @@ def keygen(
                 sys.stdout.buffer.write(public_key)
 
         else:
-            # Multiple generations
+            # Multiple generations OR single generation with c-array header output
             if not output_path:
-                raise click.UsageError("--output is required for multiple generations")
+                raise click.UsageError("--output is required for this mode")
 
             from .keygen import generate_multiple_keys
 
             output_dir = output_path
-            generate_multiple_keys(algorithm, generations, output_dir, key_format)
+            # Enforce directory for c-array mode for consistency
+            output_dir.mkdir(parents=True, exist_ok=True)
+            generate_multiple_keys(
+                algorithm,
+                generations,
+                output_dir,
+                key_format,
+                private_key_format=private_key_format,
+                emit_macros_header=emit_macros_header,
+            )
 
             click.secho(
                 f"✓ Generated {generations} key generation(s) in {output_dir}", fg="green"
