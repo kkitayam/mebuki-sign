@@ -90,20 +90,25 @@ mebuki-sign info -i firmware_signed.bin --algorithm ed25519
 ## Binary Format
 
 ```
-+------------------+
-| Header (8 bytes) |
-|   - Magic: 0x4D42454B ("MBEK")
-|   - Security version (uint16)
-|   - Key generation (uint8)
-|   - Reserved (uint8)
-+------------------+
-| Software binary  |
-| (variable size)  |
-+------------------+
-| Signature        |
-| (algorithm-      |
-|  dependent)      |
-+------------------+
++-------------------------+
+| Header (8 bytes)        |
+|   [0-1]   security_version (uint16_t)
+|   [2]     key_generation (uint8_t)
+|   [3]     invalidation_flag (uint8_t)
+|   [4-7]   software_size (uint32_t)
++-------------------------+
+| Software binary         |
+| (variable size)         |
++-------------------------+
+| Signature               |
+| (algorithm-dependent)   |
++-------------------------+
+
+**Header fields:**
+- `security_version`: Monotonically increasing value (0-0xFFFE) to prevent rollback attacks
+- `key_generation`: Current key generation number (0-254) for key rotation
+- `invalidation_flag`: Firmware validity flag (0xFF = valid, 0x00 = invalid)
+- `software_size`: Size of the software binary in bytes
 ```
 
 ## Advanced Usage
