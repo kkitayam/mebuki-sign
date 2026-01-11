@@ -17,21 +17,20 @@ from .errors import InvalidBinaryError
 class Header:
     """Firmware binary header (8 bytes).
 
-    Layout:
-        uint32_t magic;             // 0x4D42454B ("MBEK")
+    Layout (mbk_header_t):
         uint16_t security_version;  // 0-0xFFFE (0xFFFF = uninitialized)
         uint8_t  key_generation;    // 0-0xFE (0xFF = uninitialized)
-        uint8_t  reserved;          // Must be 0xFF
+        uint8_t  invalidation_flag; // 0xFF=valid, 0x00=invalid
+        uint32_t software_size;     // software size in bytes
     """
 
-    magic: int = 0x4D42454B  # "MBEK"
     security_version: int = 0
     key_generation: int = 0
-    reserved: int = 0xFF
+    invalidation_flag: int = 0xFF
+    software_size: int = 0
 
-    MAGIC = 0x4D42454B
     SIZE = 8
-    FORMAT = "<IHBB"  # Little-endian: uint32, uint16, uint8, uint8
+    FORMAT = "<HBBI"  # Little-endian: uint16, uint8, uint8, uint32
 
     def pack(self) -> bytes:
         """Serialize header to bytes.
@@ -42,8 +41,6 @@ class Header:
         Raises:
             InvalidBinaryError: If header values are invalid
         """
-        if self.magic != self.MAGIC:
-            raise InvalidBinaryError(f"Invalid magic: 0x{self.magic:08X}")
         if not (0 <= self.security_version <= 0xFFFE):
             raise InvalidBinaryError(
                 f"Invalid security_version: {self.security_version} (must be 0-0xFFFE)"
@@ -52,9 +49,21 @@ class Header:
             raise InvalidBinaryError(
                 f"Invalid key_generation: {self.key_generation} (must be 0-0xFE)"
             )
+        if self.invalidation_flag != 0xFF:
+            raise InvalidBinaryError(
+                f"Invalid invalidation_flag: 0x{self.invalidation_flag:02X} (must be 0xFF)"
+            )
+        if not (0 <= self.software_size <= 0xFFFFFFFF):
+            raise InvalidBinaryError(
+                f"Invalid software_size: {self.software_size} (must be 0-0xFFFFFFFF)"
+            )
 
         return struct.pack(
-            self.FORMAT, self.magic, self.security_version, self.key_generation, self.reserved
+            self.FORMAT,
+            self.security_version,
+            self.key_generation,
+            self.invalidation_flag,
+            self.software_size,
         )
 
     @classmethod
@@ -74,21 +83,21 @@ class Header:
             raise InvalidBinaryError(f"Header too short: {len(data)} bytes (expected {cls.SIZE})")
 
         try:
-            magic, security_version, key_generation, reserved = struct.unpack(
+            security_version, key_generation, invalidation_flag, software_size = struct.unpack(
                 cls.FORMAT, data[: cls.SIZE]
             )
         except struct.error as e:
             raise InvalidBinaryError(f"Failed to unpack header: {e}") from e
 
-        if magic != cls.MAGIC:
-            raise InvalidBinaryError(f"Invalid magic: 0x{magic:08X} (expected 0x{cls.MAGIC:08X})")
-
-        return cls(
-            magic=magic,
+        candidate = cls(
             security_version=security_version,
             key_generation=key_generation,
-            reserved=reserved,
+            invalidation_flag=invalidation_flag,
+            software_size=software_size,
         )
+        # Reuse pack validation to ensure fields are acceptable
+        candidate.pack()
+        return candidate
 
 
 @dataclass
@@ -144,6 +153,12 @@ class SignedBinary:
         if len(signature) != signature_size:
             raise InvalidBinaryError(
                 f"Invalid signature size: {len(signature)} bytes (expected {signature_size})"
+            )
+
+        if len(software) != header.software_size:
+            raise InvalidBinaryError(
+                f"Software size mismatch: header {header.software_size} bytes,"
+                f" actual {len(software)} bytes"
             )
 
         return cls(header=header, software=software, signature=signature)

@@ -4,6 +4,7 @@ from typing import BinaryIO
 
 from .algorithms import get_algorithm
 from .binary import SignedBinary
+from .errors import InvalidBinaryError
 from .keygen import load_key
 
 
@@ -27,6 +28,18 @@ def verify_signature(
         InvalidKeyError: If public key is invalid
     """
     algorithm = get_algorithm(algorithm_name)
+
+    if len(signed_binary.software) != signed_binary.header.software_size:
+        raise InvalidBinaryError(
+            f"Software size mismatch: header {signed_binary.header.software_size} bytes,"
+            f" actual {len(signed_binary.software)} bytes"
+        )
+
+    if len(signed_binary.signature) != algorithm.signature_size:
+        raise InvalidBinaryError(
+            f"Invalid signature size: {len(signed_binary.signature)} bytes"
+            f" (expected {algorithm.signature_size})"
+        )
 
     # Reconstruct message: header + software
     message = signed_binary.header.pack() + signed_binary.software

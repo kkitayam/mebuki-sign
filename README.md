@@ -1,6 +1,6 @@
 # mebuki-sign
 
-Firmware signing tool for [libmebuki](https://github.com/kkitayam/mebuki) secure boot library.
+Firmware signing tool for [mebuki](https://github.com/kkitayam/mebuki) secure boot library.
 
 ## Features
 
@@ -182,7 +182,7 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ## Related Projects
 
-- [libmebuki](https://github.com/kkitayam/mebuki): Secure boot library for MCU
+- [mebuki](https://github.com/kkitayam/mebuki): Secure boot library for MCU
 - [liboqs](https://github.com/open-quantum-safe/liboqs): Open Quantum Safe library
 
 ## Contributing

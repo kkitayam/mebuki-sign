@@ -37,6 +37,8 @@ def sign_firmware(
     header = Header(
         security_version=security_version,
         key_generation=key_generation,
+        invalidation_flag=0xFF,
+        software_size=len(unsigned_binary),
     )
 
     # Sign: header + software
