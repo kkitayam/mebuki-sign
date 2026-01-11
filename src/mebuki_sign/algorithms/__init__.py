@@ -2,12 +2,12 @@
 
 from .base import SignatureAlgorithm
 from .ed25519 import Ed25519Algorithm
-from .ecdsa_p256 import ECDSAP256Algorithm
+from .eddsa_25519_blake2b import EdDSA25519BLAKE2bAlgorithm
 
 # Algorithm registry
 ALGORITHMS: dict[str, type[SignatureAlgorithm]] = {
     "ed25519": Ed25519Algorithm,
-    "ecdsa-p256": ECDSAP256Algorithm,
+    "eddsa-25519-blake2b": EdDSA25519BLAKE2bAlgorithm,
 }
 
 # Try to import PQC algorithms if liboqs is available
@@ -53,7 +53,7 @@ def get_algorithm(name: str) -> type[SignatureAlgorithm]:
 __all__ = [
     "SignatureAlgorithm",
     "Ed25519Algorithm",
-    "ECDSAP256Algorithm",
+    "EdDSA25519BLAKE2bAlgorithm",
     "ALGORITHMS",
     "PQC_AVAILABLE",
     "get_algorithm",
