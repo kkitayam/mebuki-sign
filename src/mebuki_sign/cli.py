@@ -357,9 +357,9 @@ def info(ctx: click.Context, input_path: Path, algorithm: str) -> None:
             signed = SignedBinary.from_file(f, algo.signature_size)
 
         click.echo(f"File: {input_path}")
-        click.echo(f"Magic: 0x{signed.header.magic:08X}")
         click.echo(f"Security version: {signed.header.security_version}")
         click.echo(f"Key generation: {signed.header.key_generation}")
+        click.echo(f"Invalidation flag: 0x{signed.header.invalidation_flag:02X}")
         click.echo(f"Software size: {len(signed.software)} bytes")
         click.echo(f"Signature size: {len(signed.signature)} bytes")
         click.echo(f"Total size: {len(signed.pack())} bytes")
