@@ -10,21 +10,41 @@ ALGORITHMS: dict[str, type[SignatureAlgorithm]] = {
     "eddsa-25519-blake2b": EdDSA25519BLAKE2bAlgorithm,
 }
 
+PQC_AVAILABLE = False
+FNDSA_AVAILABLE = False
+
 # Try to import PQC algorithms if liboqs is available
 try:
-    from .pqc import MLDSA44Algorithm, MLDSA65Algorithm, MLDSA87Algorithm, FNDSAAlgorithm
+    from .pqc import (
+        MLDSA44Algorithm,
+        MLDSA65Algorithm,
+        MLDSA87Algorithm,
+        SLHDSAShake128fSimpleAlgorithm,
+    )
 
     ALGORITHMS.update(
         {
             "mldsa44": MLDSA44Algorithm,
             "mldsa65": MLDSA65Algorithm,
             "mldsa87": MLDSA87Algorithm,
-            "fndsa": FNDSAAlgorithm,
+            "slh-dsa-shake-128f-simple": SLHDSAShake128fSimpleAlgorithm,
         }
     )
     PQC_AVAILABLE = True
 except ImportError:
     PQC_AVAILABLE = False
+
+try:
+    from .fndsa_fips206 import FNDSA512Algorithm
+
+    ALGORITHMS.update(
+        {
+            "fndsa512": FNDSA512Algorithm,
+        }
+    )
+    FNDSA_AVAILABLE = True
+except ImportError:
+    FNDSA_AVAILABLE = False
 
 
 def get_algorithm(name: str) -> type[SignatureAlgorithm]:
@@ -56,5 +76,6 @@ __all__ = [
     "EdDSA25519BLAKE2bAlgorithm",
     "ALGORITHMS",
     "PQC_AVAILABLE",
+    "FNDSA_AVAILABLE",
     "get_algorithm",
 ]

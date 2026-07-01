@@ -60,7 +60,7 @@ class EdDSA25519BLAKE2bAlgorithm:
         """
         try:
             signing_key = ed25519_blake2b.SigningKey(private_key)
-            return signing_key.sign(message)
+            return bytes(signing_key.sign(message))
         except Exception as e:
             raise InvalidKeyError(f"Invalid EdDSA-25519-BLAKE2b private key: {e}") from e
 

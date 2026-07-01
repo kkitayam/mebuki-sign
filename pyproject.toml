@@ -35,6 +35,9 @@ dependencies = [
 pqc = [
     "liboqs-python>=0.10.0",
 ]
+fndsa = [
+    "py-fn-dsa>=0.1.0",
+]
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
@@ -74,6 +77,10 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 disallow_any_generics = true
 
+[[tool.mypy.overrides]]
+module = ["oqs", "py_fn_dsa", "ed25519_blake2b"]
+ignore_missing_imports = true
+
 [tool.ruff]
 target-version = "py310"
 line-length = 100
@@ -94,3 +101,6 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"] # allow assert in tests
+
+[tool.uv.sources]
+py-fn-dsa = { path = "../py-fn-dsa", editable = true }

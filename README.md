@@ -4,11 +4,11 @@ Firmware signing tool for [mebuki](https://github.com/kkitayam/mebuki) secure bo
 
 ## Features
 
-- **Multiple signature algorithms**: Ed25519, EdDSA-25519-BLAKE2b, ML-DSA (Dilithium), FN-DSA (SPHINCS+)
+- **Multiple signature algorithms**: Ed25519, EdDSA-25519-BLAKE2b, ML-DSA (Dilithium), SLH-DSA (SPHINCS+), FN-DSA (FIPS 206)
 - **Simple CLI**: Sign, verify, and generate keys with a single command
 - **Multiple output formats**: Binary, PEM, C array (for ROM embedding)
 - **Key generation management**: Support for multiple key generations (0-254)
-- **Post-quantum ready**: Optional PQC algorithms via liboqs-python
+- **Post-quantum ready**: Optional PQC algorithms via liboqs-python and py-fn-dsa
 
 ## Installation
 
@@ -22,6 +22,12 @@ pip install mebuki-sign
 
 ```bash
 pip install mebuki-sign[pqc]
+```
+
+### With FN-DSA (FIPS 206)
+
+```bash
+pip install mebuki-sign[fndsa]
 ```
 
 ### Development installation
@@ -85,7 +91,8 @@ mebuki-sign info -i firmware_signed.bin --algorithm ed25519
 | `mldsa44` | 1312 B | 2420 B | NIST L2 (~128-bit) | Yes |
 | `mldsa65` | 1952 B | 3293 B | NIST L3 (~192-bit) | Yes |
 | `mldsa87` | 2592 B | 4595 B | NIST L5 (~256-bit) | Yes |
-| `fndsa` | 32 B | 7856 B | NIST L1 (~128-bit) | Yes |
+| `slh-dsa-shake-128f-simple` | 32 B | 7856 B | NIST L1 (~128-bit) | Yes |
+| `fndsa512` | 897 B | 666 B | NIST L1 (~128-bit) | Yes |
 
 ## Binary Format
 
@@ -179,7 +186,7 @@ mebuki-sign sign \
 - **Private key protection**: Generated private keys have `0600` permissions on Unix-like systems
 - **Security versions**: Use monotonically increasing values to prevent rollback attacks
 - **Key generations**: Support up to 255 generations (0-254) for key rotation
-- **Post-quantum**: ML-DSA and FN-DSA provide quantum-resistant security
+- **Post-quantum**: ML-DSA, SLH-DSA, and FN-DSA provide quantum-resistant security
 
 ## License
 

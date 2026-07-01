@@ -41,7 +41,7 @@ class MLDSA44Algorithm:
         """Sign with ML-DSA-44."""
         try:
             with oqs.Signature(MLDSA44Algorithm._oqs_name, private_key) as sig:
-                return sig.sign(message)
+                return bytes(sig.sign(message))
         except Exception as e:
             raise InvalidKeyError(f"Invalid ML-DSA-44 private key: {e}") from e
 
@@ -50,7 +50,7 @@ class MLDSA44Algorithm:
         """Verify ML-DSA-44 signature."""
         try:
             with oqs.Signature(MLDSA44Algorithm._oqs_name) as sig:
-                return sig.verify(message, signature, public_key)
+                return bool(sig.verify(message, signature, public_key))
         except Exception:
             return False
 
@@ -81,7 +81,7 @@ class MLDSA65Algorithm:
         """Sign with ML-DSA-65."""
         try:
             with oqs.Signature(MLDSA65Algorithm._oqs_name, private_key) as sig:
-                return sig.sign(message)
+                return bytes(sig.sign(message))
         except Exception as e:
             raise InvalidKeyError(f"Invalid ML-DSA-65 private key: {e}") from e
 
@@ -90,7 +90,7 @@ class MLDSA65Algorithm:
         """Verify ML-DSA-65 signature."""
         try:
             with oqs.Signature(MLDSA65Algorithm._oqs_name) as sig:
-                return sig.verify(message, signature, public_key)
+                return bool(sig.verify(message, signature, public_key))
         except Exception:
             return False
 
@@ -121,7 +121,7 @@ class MLDSA87Algorithm:
         """Sign with ML-DSA-87."""
         try:
             with oqs.Signature(MLDSA87Algorithm._oqs_name, private_key) as sig:
-                return sig.sign(message)
+                return bytes(sig.sign(message))
         except Exception as e:
             raise InvalidKeyError(f"Invalid ML-DSA-87 private key: {e}") from e
 
@@ -130,13 +130,13 @@ class MLDSA87Algorithm:
         """Verify ML-DSA-87 signature."""
         try:
             with oqs.Signature(MLDSA87Algorithm._oqs_name) as sig:
-                return sig.verify(message, signature, public_key)
+                return bool(sig.verify(message, signature, public_key))
         except Exception:
             return False
 
 
-class FNDSAAlgorithm:
-    """FN-DSA (FIPS 205, SPHINCS+-SHAKE-128f-simple).
+class SLHDSAShake128fSimpleAlgorithm:
+    """SLH-DSA (FIPS 205, SPHINCS+-SHAKE-128f-simple).
 
     - Public key size: 32 bytes
     - Signature size: 7856 bytes
@@ -144,33 +144,33 @@ class FNDSAAlgorithm:
     - Note: Stateless hash-based signature (slower than ML-DSA)
     """
 
-    name = "fndsa"
+    name = "slh-dsa-shake-128f-simple"
     public_key_size = 32
     signature_size = 7856
     _oqs_name = "SPHINCS+-SHAKE-128f-simple"
 
     @staticmethod
     def generate_keypair() -> tuple[bytes, bytes]:
-        """Generate FN-DSA keypair."""
-        with oqs.Signature(FNDSAAlgorithm._oqs_name) as sig:
+        """Generate SLH-DSA keypair."""
+        with oqs.Signature(SLHDSAShake128fSimpleAlgorithm._oqs_name) as sig:
             public_key = sig.generate_keypair()
             private_key = sig.export_secret_key()
             return private_key, public_key
 
     @staticmethod
     def sign(private_key: bytes, message: bytes) -> bytes:
-        """Sign with FN-DSA."""
+        """Sign with SLH-DSA."""
         try:
-            with oqs.Signature(FNDSAAlgorithm._oqs_name, private_key) as sig:
-                return sig.sign(message)
+            with oqs.Signature(SLHDSAShake128fSimpleAlgorithm._oqs_name, private_key) as sig:
+                return bytes(sig.sign(message))
         except Exception as e:
-            raise InvalidKeyError(f"Invalid FN-DSA private key: {e}") from e
+            raise InvalidKeyError(f"Invalid SLH-DSA private key: {e}") from e
 
     @staticmethod
     def verify(public_key: bytes, message: bytes, signature: bytes) -> bool:
-        """Verify FN-DSA signature."""
+        """Verify SLH-DSA signature."""
         try:
-            with oqs.Signature(FNDSAAlgorithm._oqs_name) as sig:
-                return sig.verify(message, signature, public_key)
+            with oqs.Signature(SLHDSAShake128fSimpleAlgorithm._oqs_name) as sig:
+                return bool(sig.verify(message, signature, public_key))
         except Exception:
             return False
