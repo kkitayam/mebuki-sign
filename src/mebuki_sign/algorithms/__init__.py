@@ -2,11 +2,13 @@
 
 from .base import SignatureAlgorithm
 from .ed25519 import Ed25519Algorithm
+from .ecdsa_p256_sha256 import ECDSAP256SHA256Algorithm
 from .eddsa_25519_blake2b import EdDSA25519BLAKE2bAlgorithm
 
 # Algorithm registry
 ALGORITHMS: dict[str, type[SignatureAlgorithm]] = {
     "ed25519": Ed25519Algorithm,
+    "ecdsa-p256-sha256": ECDSAP256SHA256Algorithm,
     "eddsa-25519-blake2b": EdDSA25519BLAKE2bAlgorithm,
 }
 
@@ -46,7 +48,6 @@ try:
 except ImportError:
     FNDSA_AVAILABLE = False
 
-
 def get_algorithm(name: str) -> type[SignatureAlgorithm]:
     """Get algorithm by name.
 
@@ -69,10 +70,10 @@ def get_algorithm(name: str) -> type[SignatureAlgorithm]:
         )
     return ALGORITHMS[name_lower]
 
-
 __all__ = [
     "SignatureAlgorithm",
     "Ed25519Algorithm",
+    "ECDSAP256SHA256Algorithm",
     "EdDSA25519BLAKE2bAlgorithm",
     "ALGORITHMS",
     "PQC_AVAILABLE",

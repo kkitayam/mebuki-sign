@@ -4,7 +4,7 @@ Firmware signing tool for [mebuki](https://github.com/kkitayam/mebuki) secure bo
 
 ## Features
 
-- **Multiple signature algorithms**: Ed25519, EdDSA-25519-BLAKE2b, ML-DSA (Dilithium), SLH-DSA (SPHINCS+), FN-DSA (FIPS 206)
+- **Multiple signature algorithms**: Ed25519, ECDSA-P256-SHA256, EdDSA-25519-BLAKE2b, ML-DSA (Dilithium), SLH-DSA (SPHINCS+), FN-DSA (FIPS 206)
 - **Simple CLI**: Sign, verify, and generate keys with a single command
 - **Multiple output formats**: Binary, PEM, C array (for ROM embedding)
 - **Key generation management**: Support for multiple key generations (0-254)
@@ -49,6 +49,9 @@ mebuki-sign keygen --algorithm ed25519 -o mykey
 # EdDSA-25519-BLAKE2b
 mebuki-sign keygen --algorithm eddsa-25519-blake2b -o mykey
 
+# ECDSA P-256 + SHA-256
+mebuki-sign keygen --algorithm ecdsa-p256-sha256 -o mykey
+
 # Post-quantum (requires [pqc] extras)
 mebuki-sign keygen --algorithm mldsa44 -o mykey
 ```
@@ -87,6 +90,7 @@ mebuki-sign info -i firmware_signed.bin --algorithm ed25519
 | Algorithm | Public Key | Signature | Security Level | PQC |
 |-----------|-----------|-----------|----------------|-----|
 | `ed25519` | 32 B | 64 B | ~128-bit | No |
+| `ecdsa-p256-sha256` | 65 B | 64 B | ~128-bit | No |
 | `eddsa-25519-blake2b` | 32 B | 64 B | ~128-bit | No |
 | `mldsa44` | 1312 B | 2420 B | NIST L2 (~128-bit) | Yes |
 | `mldsa65` | 1952 B | 3293 B | NIST L3 (~192-bit) | Yes |
