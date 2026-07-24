@@ -4,36 +4,23 @@ Firmware signing tool for [mebuki](https://github.com/kkitayam/mebuki) secure bo
 
 ## Features
 
-- **Multiple signature algorithms**: Ed25519, ECDSA-P256-SHA256, EdDSA-25519-BLAKE2b, ML-DSA (Dilithium), SLH-DSA (SPHINCS+), FN-DSA (FIPS 206)
+- **Multiple signature algorithms**: ECDSA-P256-SHA256, FN-DSA (FIPS 206)
 - **Simple CLI**: Sign, verify, and generate keys with a single command
 - **Multiple output formats**: Binary, PEM, C array (for ROM embedding)
 - **Key generation management**: Support for multiple key generations (0-254)
-- **Post-quantum ready**: Optional PQC algorithms via liboqs-python and py-fn-dsa
 
 ## Installation
 
-### Basic installation (Ed25519, EdDSA-25519-BLAKE2b)
+### Basic installation (ECDSA-P256-SHA256, FN-DSA)
 
 ```bash
 pip install mebuki-sign
 ```
 
-### With post-quantum algorithms
-
-```bash
-pip install mebuki-sign[pqc]
-```
-
-### With FN-DSA (FIPS 206)
-
-```bash
-pip install mebuki-sign[fndsa]
-```
-
 ### Development installation
 
 ```bash
-git clone https://github.com/kkitayam/mebuki.git
+git clone https://github.com/kkitayam/mebuki-sign.git
 cd mebuki-sign
 pip install -e .[dev]
 ```
@@ -43,17 +30,11 @@ pip install -e .[dev]
 ### 1. Generate keypair
 
 ```bash
-# Ed25519 (default)
-mebuki-sign keygen --algorithm ed25519 -o mykey
-
-# EdDSA-25519-BLAKE2b
-mebuki-sign keygen --algorithm eddsa-25519-blake2b -o mykey
-
-# ECDSA P-256 + SHA-256
+# ECDSA P-256 + SHA-256 (default)
 mebuki-sign keygen --algorithm ecdsa-p256-sha256 -o mykey
 
-# Post-quantum (requires [pqc] extras)
-mebuki-sign keygen --algorithm mldsa44 -o mykey
+# Post-quantum
+mebuki-sign keygen --algorithm fndsa512 -o mykey
 ```
 
 This creates `mykey.key` (private) and `mykey.pub` (public).
@@ -65,7 +46,7 @@ mebuki-sign sign \
   -i firmware.bin \
   -o firmware_signed.bin \
   -k mykey.key \
-  --algorithm ed25519 \
+  --algorithm ecdsa-p256-sha256 \
   --security-version 1 \
   --key-generation 0
 ```
@@ -76,26 +57,20 @@ mebuki-sign sign \
 mebuki-sign verify \
   -i firmware_signed.bin \
   -k mykey.pub \
-  --algorithm ed25519
+  --algorithm ecdsa-p256-sha256
 ```
 
 ### 4. Display binary information
 
 ```bash
-mebuki-sign info -i firmware_signed.bin --algorithm ed25519
+mebuki-sign info -i firmware_signed.bin --algorithm ecdsa-p256-sha256
 ```
 
 ## Supported Algorithms
 
 | Algorithm | Public Key | Signature | Security Level | PQC |
 |-----------|-----------|-----------|----------------|-----|
-| `ed25519` | 32 B | 64 B | ~128-bit | No |
 | `ecdsa-p256-sha256` | 65 B | 64 B | ~128-bit | No |
-| `eddsa-25519-blake2b` | 32 B | 64 B | ~128-bit | No |
-| `mldsa44` | 1312 B | 2420 B | NIST L2 (~128-bit) | Yes |
-| `mldsa65` | 1952 B | 3293 B | NIST L3 (~192-bit) | Yes |
-| `mldsa87` | 2592 B | 4595 B | NIST L5 (~256-bit) | Yes |
-| `slh-dsa-shake-128f-simple` | 32 B | 7856 B | NIST L1 (~128-bit) | Yes |
 | `fndsa512` | 897 B | 666 B | NIST L1 (~128-bit) | Yes |
 
 ## Binary Format
@@ -129,7 +104,7 @@ mebuki-sign info -i firmware_signed.bin --algorithm ed25519
 ```bash
 # Generate 8 key generations for key rotation
 mebuki-sign keygen \
-  --algorithm ed25519 \
+  --algorithm ecdsa-p256-sha256 \
   --generations 8 \
   -o keys/
 ```
@@ -144,7 +119,7 @@ This creates:
 
 ```bash
 mebuki-sign keygen \
-  --algorithm ed25519 \
+  --algorithm ecdsa-p256-sha256 \
   --format c-array \
   -o rom_keys
 ```
@@ -161,7 +136,7 @@ const uint8_t key[] = {
 
 ```bash
 # Generate in PEM format
-mebuki-sign keygen --algorithm ed25519 --format pem -o mykey
+mebuki-sign keygen --algorithm ecdsa-p256-sha256 --format pem -o mykey
 
 # Sign using PEM key
 mebuki-sign sign \
@@ -169,7 +144,7 @@ mebuki-sign sign \
   -o firmware_signed.bin \
   -k mykey.key \
   --key-format pem \
-  --algorithm ed25519 \
+  --algorithm ecdsa-p256-sha256 \
   -v 1 -g 0
 ```
 
@@ -190,18 +165,7 @@ mebuki-sign sign \
 - **Private key protection**: Generated private keys have `0600` permissions on Unix-like systems
 - **Security versions**: Use monotonically increasing values to prevent rollback attacks
 - **Key generations**: Support up to 255 generations (0-254) for key rotation
-- **Post-quantum**: ML-DSA, SLH-DSA, and FN-DSA provide quantum-resistant security
 
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
-
-## Related Projects
-
-- [mebuki](https://github.com/kkitayam/mebuki): Secure boot library for MCU
-- [liboqs](https://github.com/open-quantum-safe/liboqs): Open Quantum Safe library
-
-## Contributing
-
-Contributions welcome! Please submit issues and pull requests on GitHub.
-A lightweight CLI tool for signing firmware images for libmebuki secure boot.
