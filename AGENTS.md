@@ -1,7 +1,6 @@
 # mebuki-sign — Agent Instructions
 
 MCU ファームウェア署名ツール。[mebuki](https://github.com/kkitayam/mebuki) セキュアブートライブラリ向けにファームウェアに署名する。
-詳細な要件: [docs/mebuki-sign_requirements.md](docs/mebuki-sign_requirements.md)
 
 ## ビルド・テスト コマンド
 
@@ -65,12 +64,12 @@ CLI (cli.py)  →  signer.py / verifier.py / keygen.py
 
 2. `src/mebuki_sign/algorithms/__init__.py` の `ALGORITHMS` 辞書に登録。
 
-3. オプション依存なら `pyproject.toml` に依存グループを追加し、`algorithms/__init__.py` で `ImportError` を捕捉して `MissingDependencyError` を送出するパターンを使う（[pqc.py](src/mebuki_sign/algorithms/pqc.py) を参照）。
+3. オプション依存なら `pyproject.toml` に依存グループを追加し、`algorithms/__init__.py` で `ImportError` を捕捉して `MissingDependencyError` を送出するパターンを使う。
 
 ## テスト規約
 
 - テストクラス命名: `Test{AlgorithmName}Algorithm`
-- 必須テストメソッド（[test_algorithms.py](tests/test_algorithms.py) を参照）:
+- 必須テストメソッド（[test_ecdsa_p256_sha256.py](tests/test_ecdsa_p256_sha256.py) を参照）:
   - `test_generate_keypair` — 鍵サイズの確認
   - `test_sign_verify_success` — 正常系
   - `test_verify_wrong_message` — 改ざん検知
@@ -81,6 +80,5 @@ CLI (cli.py)  →  signer.py / verifier.py / keygen.py
 
 ## 既知の問題・注意点
 
-- `ed25519.py` に `serialization` インポート漏れがある（NameError になる）。
 - MCU 向け C 配列出力では uint8_t 配列 + アライメント (`_Alignas`) が必要になる場合がある（HardFault 対策）。
 - `security_version` の最大値は 0xFFFE（0xFFFF は予約済み）。`key_generation` 最大値は 0xFE。

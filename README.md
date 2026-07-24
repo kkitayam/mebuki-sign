@@ -22,7 +22,7 @@ pip install mebuki-sign
 ```bash
 git clone https://github.com/kkitayam/mebuki-sign.git
 cd mebuki-sign
-pip install -e .[dev]
+pip install -e . --group dev
 ```
 
 ## Quick Start

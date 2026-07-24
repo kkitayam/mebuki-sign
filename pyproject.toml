@@ -7,21 +7,18 @@ name = "mebuki-sign"
 version = "0.1.0"
 description = "Firmware signing tool for mebuki secure boot library"
 readme = "README.md"
-license = { text = "MIT" }
-requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Koji KITAYAMA" }
 ]
+requires-python = ">=3.10"
 keywords = ["secure-boot", "firmware", "signing", "cryptography", "mcu"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
     "Topic :: Security :: Cryptography",
     "Topic :: Software Development :: Embedded Systems",
 ]
@@ -33,7 +30,7 @@ dependencies = [
     "ed25519-blake2b>=1.3",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
@@ -43,9 +40,7 @@ dev = [
 mebuki-sign = "mebuki_sign.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/kkitayam/mebuki"
-Documentation = "https://github.com/kkitayam/mebuki/tree/main/docs"
-Repository = "https://github.com/kkitayam/mebuki"
+Repository = "https://github.com/kkitayam/mebuki-sign"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mebuki_sign"]
