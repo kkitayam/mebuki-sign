@@ -12,7 +12,7 @@ def test_generate_multiple_keys_c_array_creates_header_and_pem(tmp_path: Path) -
     out_dir = tmp_path / "out"
 
     generate_multiple_keys(
-        "ed25519",
+        "ecdsa-p256-sha256",
         num_generations=2,
         output_dir=out_dir,
         key_format="c-array",

@@ -2,7 +2,7 @@
 
 import pytest
 
-from mebuki_sign.algorithms.ed25519 import Ed25519Algorithm
+from mebuki_sign.algorithms import ECDSAP256SHA256Algorithm as ECDSAAlgorithm
 from mebuki_sign.binary import Header, SignedBinary
 from mebuki_sign.errors import InvalidBinaryError
 from mebuki_sign.verifier import verify_signature
@@ -10,7 +10,7 @@ from mebuki_sign.verifier import verify_signature
 
 def make_signed_binary(software: bytes = b"payload") -> tuple[Header, bytes, bytes, bytes]:
     """Create a self-signed binary for testing."""
-    private_key, public_key = Ed25519Algorithm.generate_keypair()
+    private_key, public_key = ECDSAAlgorithm.generate_keypair()
     header = Header(
         security_version=1,
         key_generation=1,
@@ -18,7 +18,7 @@ def make_signed_binary(software: bytes = b"payload") -> tuple[Header, bytes, byt
         software_size=len(software),
     )
     message = header.pack() + software
-    signature = Ed25519Algorithm.sign(private_key, message)
+    signature = ECDSAAlgorithm.sign(private_key, message)
     return header, software, signature, public_key
 
 
@@ -27,7 +27,7 @@ def test_verify_signature_success():
     header, software, signature, public_key = make_signed_binary()
     signed = SignedBinary(header=header, software=software, signature=signature)
 
-    assert verify_signature(signed, public_key, "ed25519") is True
+    assert verify_signature(signed, public_key, "ecdsa-p256-sha256") is True
 
 
 def test_verify_signature_software_size_mismatch():
@@ -42,7 +42,7 @@ def test_verify_signature_software_size_mismatch():
     signed = SignedBinary(header=bad_header, software=software, signature=signature)
 
     with pytest.raises(InvalidBinaryError, match="Software size mismatch"):
-        verify_signature(signed, public_key, "ed25519")
+        verify_signature(signed, public_key, "ecdsa-p256-sha256")
 
 
 def test_verify_signature_invalid_signature_size():
@@ -52,4 +52,4 @@ def test_verify_signature_invalid_signature_size():
     signed = SignedBinary(header=header, software=software, signature=short_signature)
 
     with pytest.raises(InvalidBinaryError, match="Invalid signature size"):
-        verify_signature(signed, public_key, "ed25519")
+        verify_signature(signed, public_key, "ecdsa-p256-sha256")

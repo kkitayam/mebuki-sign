@@ -1,13 +1,6 @@
 """FN-DSA (FIPS 206) algorithm using py-fn-dsa."""
 
-try:
-    from py_fn_dsa import LOGN_512, SigningKey, VerifyKey, keygen, sign, verify
-except ImportError as e:
-    raise ImportError(
-        "py-fn-dsa is required for FN-DSA (FIPS 206). "
-        "Install with: pip install mebuki-sign[fndsa]"
-    ) from e
-
+from py_fn_dsa import LOGN_512, SigningKey, VerifyKey, keygen, sign, verify
 from ..errors import InvalidKeyError
 
 

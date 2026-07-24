@@ -7,7 +7,7 @@ from typing import Optional
 import click
 
 from . import __version__
-from .algorithms import ALGORITHMS, PQC_AVAILABLE
+from .algorithms import ALGORITHMS
 from .errors import MebukiSignError
 
 
@@ -18,8 +18,8 @@ from .errors import MebukiSignError
 def main(ctx: click.Context, verbose: bool) -> None:
     """Firmware signing tool for libmebuki secure boot library.
 
-    Supports multiple signature algorithms including Ed25519, ECDSA-P256,
-    and post-quantum algorithms (ML-DSA, FN-DSA).
+    Supports multiple signature algorithms including ECDSA-P256
+    and post-quantum algorithms (FN-DSA).
     """
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
