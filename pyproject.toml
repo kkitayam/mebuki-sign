@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mebuki-sign"
-version = "0.1.0"
+version = "0.2.0"
 description = "Firmware signing tool for mebuki secure boot library"
 readme = "README.md"
 license = "MIT"
@@ -26,7 +26,7 @@ classifiers = [
 dependencies = [
     "cryptography>=42.0.0",
     "click>=8.1.0",
-    "py-fn-dsa>=0.1.0",
+    "py-fn-dsa>=0.2.0",
     "ed25519-blake2b>=1.3",
 ]
 

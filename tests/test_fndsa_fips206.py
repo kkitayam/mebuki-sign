@@ -27,7 +27,7 @@ class TestFNDSA512Algorithm:
 
         private_key, public_key = FNDSA512Algorithm.generate_keypair()
 
-        assert len(private_key) == 1281
+        assert len(private_key) == 1345
         assert len(public_key) == 897
         assert private_key != public_key
 
