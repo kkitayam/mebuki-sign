@@ -16,7 +16,7 @@ class FNDSA512Algorithm:
     public_key_size = 897
     signature_size = 666
     _logn = LOGN_512
-    _private_key_size = 1281
+    _private_key_size = 1345
 
     @staticmethod
     def generate_keypair() -> tuple[bytes, bytes]:
